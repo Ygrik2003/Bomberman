@@ -1,0 +1,6 @@
+# ninja log v5
+1	390	1714584043114472652	src/CMakeFiles/Bomberman.dir/main.cpp.o	e61f31c65ac460c4
+189	229	1714503015393104018	src/Bomberman	be7cb774bc182aaf
+1	147	1714584586297046218	src/CMakeFiles/Bomberman.dir/glad/glad.c.o	91e07d62a0307ef2
+1	318	1714585364704835472	src/CMakeFiles/Bomberman.dir/main.cpp.o	e61f31c65ac460c4
+318	393	1714585364776835825	src/Bomberman	d027bd062aa18f17
