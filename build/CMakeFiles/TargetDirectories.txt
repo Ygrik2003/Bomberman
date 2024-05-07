@@ -2,10 +2,6 @@
 /home/max/IT/GameDev/Bomberman/build/CMakeFiles/package_source.dir
 /home/max/IT/GameDev/Bomberman/build/CMakeFiles/edit_cache.dir
 /home/max/IT/GameDev/Bomberman/build/CMakeFiles/rebuild_cache.dir
-/home/max/IT/GameDev/Bomberman/build/CMakeFiles/list_install_components.dir
-/home/max/IT/GameDev/Bomberman/build/CMakeFiles/install.dir
-/home/max/IT/GameDev/Bomberman/build/CMakeFiles/install/local.dir
-/home/max/IT/GameDev/Bomberman/build/CMakeFiles/install/strip.dir
 /home/max/IT/GameDev/Bomberman/build/src/CMakeFiles/Experimental.dir
 /home/max/IT/GameDev/Bomberman/build/src/CMakeFiles/Nightly.dir
 /home/max/IT/GameDev/Bomberman/build/src/CMakeFiles/Continuous.dir
@@ -39,7 +35,3 @@
 /home/max/IT/GameDev/Bomberman/build/src/CMakeFiles/package_source.dir
 /home/max/IT/GameDev/Bomberman/build/src/CMakeFiles/edit_cache.dir
 /home/max/IT/GameDev/Bomberman/build/src/CMakeFiles/rebuild_cache.dir
-/home/max/IT/GameDev/Bomberman/build/src/CMakeFiles/list_install_components.dir
-/home/max/IT/GameDev/Bomberman/build/src/CMakeFiles/install.dir
-/home/max/IT/GameDev/Bomberman/build/src/CMakeFiles/install/local.dir
-/home/max/IT/GameDev/Bomberman/build/src/CMakeFiles/install/strip.dir

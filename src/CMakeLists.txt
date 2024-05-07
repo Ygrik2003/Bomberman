@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(Bomberman VERSION 0.1.0 LANGUAGES C CXX)
 
+set(CMAKE_CXX_COMPILER_WORKS 1)
+
 # find_package(OpenGL)
 
 # if(NOT OPENGL_FOUND)
@@ -15,13 +17,30 @@ find_package(OpenGL REQUIRED)
 
 set(BOMBERMAN_FILES
     main.cpp
+    game.hpp
+    game.cpp
+    config.hpp
     glad/glad.c
+    core/actionField.hpp
+    core/actionField.cpp
+    engine/fileReader.hpp
+    engine/fileReader.cpp
+    engine/logger.hpp
+    engine/logger.cpp
+    engine/render.hpp
+    engine/render.cpp
+    engine/shaderProgram.hpp
+    engine/shaderProgram.cpp
+    engine/stb_image.h
+    engine/stb_image.cpp
     )
 
 include(CTest)
 enable_testing()
 
-add_executable(Bomberman ${BOMBERMAN_FILES})
+set(EXECUTABLE_NAME Bomberman)
+
+add_executable(${EXECUTABLE_NAME} ${BOMBERMAN_FILES})
 # Link SDL2 library
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})
 
