@@ -5,10 +5,10 @@ layout (location = 2) in vec2 aTexCoord;
 
 out vec2 TexCoord;
 
-uniform float screenRation;
+uniform float screenRatio;
 
-float ax = screenRation * 2. / 8;
-float ay = -2. / 8;
+float ax = screenRatio * 2. / 16;
+float ay = -2. / 16;
 
 void main(){
     TexCoord = aTexCoord;

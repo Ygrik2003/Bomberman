@@ -30,7 +30,7 @@ struct Bomberman{
     int32_t cooldownImmortality = 3;
     int32_t lives = 3;
     int32_t bombCount = 1;
-    int32_t power = 1;
+    int32_t power = 5;
     Side side;
 };
 

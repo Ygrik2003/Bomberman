@@ -24,6 +24,7 @@ class ActionField{
         S_str getUnion(S_str& s1, S_str& s2);
         S_str getIntersection(S_str& s1, S_str& s2);
         S_str getRange(int32_t a, int32_t b);
+        S_str getDifference(S_str& s1, S_str& s2);
         
         template<typename V>
         S_str getSetOfKeys(std::map<str, V> map);

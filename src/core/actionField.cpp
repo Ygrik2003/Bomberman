@@ -169,7 +169,7 @@ void ActionField::drawPlayers(){
 }
 
 void ActionField::draw(){
-    render->setUniformFloat("screenRation", 6./8.);
+    render->setUniformFloat("screenRatio", 4./10.);
     drawSets(fieldSolidWall, TEXTURE_SOLID_WALL);
     drawSets(fieldPossible, TEXTURE_AIR);
     drawSets(fieldWall, TEXTURE_WALL);
@@ -226,7 +226,7 @@ void ActionField::calculate(){
     for(itExplosion = fieldExplosion.begin(); itExplosion != fieldExplosion.end();){
         itExplosion->second--;
         if(itExplosion->second == 0){
-            fieldExplosion.erase(itExplosion);
+            itExplosion = fieldExplosion.erase(itExplosion);
         } else {
             itExplosion++;
         }
@@ -277,6 +277,11 @@ void ActionField::explodeDirect(Coordinate coordinateFrom, Coordinate coordinate
     if(power == 0)
         return;
 
+    S_str strCoord = {toStringCoord(coordinateTo)};
+
+    if(getIntersection(strCoord, fieldSolidWall).size() == 1)
+        return;
+
     insertExplosion(coordinateTo);
 
     Coordinate coordinateToNew = coordinateTo;
@@ -285,6 +290,11 @@ void ActionField::explodeDirect(Coordinate coordinateFrom, Coordinate coordinate
     coordinateToNew.x += dx;
     coordinateToNew.y += dy;
 
+    if(getIntersection(strCoord, fieldWall).size() == 1){
+        fieldWall = getDifference(fieldWall, strCoord);
+        fieldPossible = getUnion(fieldPossible, strCoord);
+        return;
+    }
     explodeDirect(coordinateTo, coordinateToNew, power - 1);
 }
 
@@ -321,6 +331,12 @@ S_str ActionField::getRange(int32_t a, int32_t b){
     for(it = range.begin(); it != range.end(); it++)
         res.insert(std::to_string(*it));
 
+    return res;
+}
+
+S_str ActionField::getDifference(S_str& s1, S_str& s2){
+    S_str res;
+    std::set_difference(s1.begin(), s1.end(), s2.begin(), s2.end(), std::inserter(res, res.begin()));
     return res;
 }
 

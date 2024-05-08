@@ -9,7 +9,7 @@ int32_t Game::init(){
         return -1;
     }
 
-    window = SDL_CreateWindow("Bomberman", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 16*40, 16*30, SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow("Bomberman", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 16*100, 16*40, SDL_WINDOW_OPENGL);
     if (!window) {
         successfulInitialization = false;
         return -1;

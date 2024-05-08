@@ -17,7 +17,7 @@ void main(){
     vec2 flippedTexCoord = flipTextureVertical(TexCoord);
 
     vec4 texColor = texture(ourTexture0, flippedTexCoord);
-    if (texColor.a < 0.4)
+    if (texColor.a < 0.9)
         discard;
     FragColor = texColor;
 }
