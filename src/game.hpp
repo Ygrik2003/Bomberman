@@ -17,7 +17,7 @@ class Game{
         ActionField* actionField;
         Render* render;
 
-        int32_t DELAY_TIME = 1000 / 60;
+        int32_t DELAY_TIME = 1000 / 30;
         int8_t* pressedKeys;
         bool successfulInitialization;
         bool quit = false;

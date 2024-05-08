@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <numeric>
 
+#define DEBUG(c) std::cout << c << std::endl;
+
 ActionField::ActionField(FileReader* fileReaderPtr, Render* render){
     this->fileReaderPtr = fileReaderPtr;
     this->render = render;
@@ -34,7 +36,7 @@ void ActionField::generateFields(V_str& rawField){
                 case AIR:
                     fieldPossible.insert(coord);
                     break;
-                case ENEMY:{
+                case PLAYER:{
                     Bomberman bomber;
                     bomber.coordinate.x = i;
                     bomber.coordinate.y = i;
@@ -50,8 +52,10 @@ void ActionField::generateFields(V_str& rawField){
                     }
                     fieldPossible.insert(coord);
                     break;
-                }case PLAYER:{
+                }case ENEMY:{
                     Bomberman bomber;
+                    bomber.coordinate.x = i;
+                    bomber.coordinate.y = i;
                     bomber.side = Side::SIDE_ENEMY;
                     enemies.push_back(bomber);
                     fieldPossible.insert(coord);
@@ -77,27 +81,22 @@ bool ActionField::tryMove(Bomberman& bmb, int32_t moveX, int32_t moveY){
 }
 
 bool ActionField::placeBomb(Bomberman& bomberman){
-    S_str str = {toStringCoord(bomberman.coordinate)};
-
     if(bomberman.bombCount < 1)
         return false;
 
-    bool success = getIntersection(str, fieldBombs).size() == 1;
-
-    if(success){
+    auto it = fieldExplosion.find(toStringCoord(bomberman.coordinate));
+    if (it != fieldExplosion.end()) {
+        return false;
+    } else {
         Bomb bomb;
         bomb.coordinate = bomberman.coordinate;
         bomb.owner = &bomberman;
         bomb.power = bomberman.power;
-        fieldBombs = getUnion(str, fieldBombs);
         bomberman.bombCount -= 1;
         bombs.insert( {toStringCoord(bomb.coordinate), bomb} );
+        return true;
     }
-
-    return success;
 }
-
-
 
 
 void ActionField::action(Action action){
@@ -142,7 +141,7 @@ void ActionField::drawExplosion(){
 
     for(it = fieldExplosion.begin(); it != fieldExplosion.end(); it++){
         coordinate = parse(it->first);
-        render->draw(coordinate.x, coordinate.y, 1, 1, TEXTURE_BOMB_1);
+        render->draw(coordinate.x, coordinate.y, 1, 1, TEXTURE_EXPLOSION_1);
     }
 }
 
@@ -174,6 +173,7 @@ void ActionField::draw(){
     drawSets(fieldSolidWall, TEXTURE_SOLID_WALL);
     drawSets(fieldPossible, TEXTURE_AIR);
     drawSets(fieldWall, TEXTURE_WALL);
+    drawBombs();
     drawPlayers();
     drawExplosion();
 }
@@ -181,16 +181,20 @@ void ActionField::draw(){
 
 void ActionField::calculate(){
     // Calculation for bombs
-    S_str::iterator itBomb;
-    for(itBomb = fieldBombs.begin(); itBomb != fieldBombs.end(); itBomb++){
+    std::map<str, Bomb>::iterator itBomb;
+    for(itBomb = bombs.begin(); itBomb != bombs.end();){
         Bomb* bomb;
-        bomb = &bombs.at(*itBomb);
+        bomb = &itBomb->second;
         bomb->ttl--;
+
         if(bomb->ttl <= 0){
             explode(bomb->coordinate, bomb->power);
-            fieldBombs.erase(itBomb);
+            bomb->owner->bombCount++;
+            itBomb = bombs.erase(itBomb);
+            // bombs.erase(itBomb);
+        } else{
+            itBomb++;
         }
-        bomb->owner->bombCount++;
     }
 
     // Calculating for players and enemies collision
@@ -219,10 +223,12 @@ void ActionField::calculate(){
 
     // Calculating for explosion
     std::map<str, int32_t>::iterator itExplosion;
-    for(itExplosion = fieldExplosion.begin(); itExplosion != fieldExplosion.end(); itExplosion++){
+    for(itExplosion = fieldExplosion.begin(); itExplosion != fieldExplosion.end();){
         itExplosion->second--;
         if(itExplosion->second == 0){
             fieldExplosion.erase(itExplosion);
+        } else {
+            itExplosion++;
         }
     }
 }

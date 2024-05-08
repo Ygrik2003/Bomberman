@@ -7,8 +7,8 @@ out vec2 TexCoord;
 
 uniform float screenRation;
 
-float ax = screenRation * 2. / 30;
-float ay = -2. / 30;
+float ax = screenRation * 2. / 8;
+float ay = -2. / 8;
 
 void main(){
     TexCoord = aTexCoord;

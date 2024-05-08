@@ -15,9 +15,7 @@ class ActionField{
         std::vector<Bomberman> players;
         std::vector<Bomberman> enemies;
         std::map<str, Bomb> bombs;
-
         std::map<str, int32_t> fieldExplosion;
-        S_str fieldBombs;
         S_str fieldPossible;
         S_str fieldSolidWall;
         S_str fieldWall;

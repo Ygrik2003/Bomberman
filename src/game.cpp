@@ -9,7 +9,7 @@ int32_t Game::init(){
         return -1;
     }
 
-    window = SDL_CreateWindow("Bomberman", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow("Bomberman", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 16*40, 16*30, SDL_WINDOW_OPENGL);
     if (!window) {
         successfulInitialization = false;
         return -1;
@@ -64,7 +64,6 @@ int32_t Game::start(){
         eventHandler();
 
         SDL_Delay(DELAY_TIME);
-        // std::cout << "UEEEEEEE" << std::endl;
 
         actionField->calculate();
         actionField->draw();
@@ -102,7 +101,6 @@ void Game::eventHandler(){
     for(it = Config::keyEventToAction.begin(); it != Config::keyEventToAction.end(); it++){
         if(pressedKeys[it->first]){
             actionField->action(it->second);
-            std::cout << (it->second) << std::endl;
         }
     }
 }
