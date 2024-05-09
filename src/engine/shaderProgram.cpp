@@ -100,6 +100,10 @@ void ShaderProgram::setFloat(const std::string& name, float value){
     glUniform1f(glGetUniformLocation(shaderProgram, name.c_str()), value);
 }
 
+void ShaderProgram::setVec2(const std::string& name, glm::vec2 value){
+    glUniform2fv(glGetUniformLocation(shaderProgram, name.c_str()), GL_TRUE, value_ptr(value));
+}
+
 void ShaderProgram::setVec4(const std::string& name, glm::vec4 value){
     glUniform4fv(glGetUniformLocation(shaderProgram, name.c_str()), GL_FALSE, value_ptr(value));
 }

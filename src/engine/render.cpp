@@ -133,6 +133,10 @@ void Render::setUniformFloat(const std::string& name, float value){
     shaderProgram->setFloat(name, value);
 }
 
+void Render::setUniformVec2(const std::string& name, glm::vec2 value){
+    shaderProgram->setVec2(name, value);
+}
+
 void Render::setUniformVec4(const std::string& name, glm::vec4 value){
     shaderProgram->setVec4(name, value);
 }

@@ -22,6 +22,7 @@ class Render {
         void setUniformBool(const std::string& name, bool value);
         void setUniformInt(const std::string& name, int32_t value);
         void setUniformFloat(const std::string& name, float value);
+        void setUniformVec2(const std::string& name, glm::vec2 value);
         void setUniformVec4(const std::string& name, glm::vec4 value);
         void setUniformMat4(const std::string& name, glm::mat4 value);
         void draw(double x, double y, double width, double height, uint32_t textureID);

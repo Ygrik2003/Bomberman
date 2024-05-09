@@ -5,12 +5,14 @@
 #include "../config.hpp"
 #include "../engine/fileReader.hpp"
 #include "../engine/render.hpp"
+#include "../math/setOperations.hpp"
 
 class ActionField{
     private:
         FileReader* fileReaderPtr;
         Render* render;
         bool isPaused = false;
+        GameState gameState = GameState::PLAYING;
 
         std::vector<Bomberman> players;
         std::vector<Bomberman> enemies;
@@ -20,18 +22,13 @@ class ActionField{
         S_str fieldSolidWall;
         S_str fieldWall;
     private:
-        S_str cartesian_of(S_str& s1, S_str& s2);
-        S_str getUnion(S_str& s1, S_str& s2);
-        S_str getIntersection(S_str& s1, S_str& s2);
-        S_str getRange(int32_t a, int32_t b);
-        S_str getDifference(S_str& s1, S_str& s2);
-        
         template<typename V>
         S_str getSetOfKeys(std::map<str, V> map);
 
         Coordinate parse(str coord);
         str toStringCoord(int32_t a, int32_t b);
         str toStringCoord(Coordinate coordinate);
+        double getDeltaTime(std::chrono::steady_clock::time_point time);
 
         std::vector<Coordinate> getNeighbors(Coordinate coordinate);
         void explode(Coordinate coordinate, int32_t power);
@@ -51,4 +48,5 @@ class ActionField{
         void action(Action action);
         void draw();
         void calculate();
+        GameState getState();
 };

@@ -17,6 +17,7 @@ class Game{
         ActionField* actionField;
         Render* render;
 
+        GameState gameState = GameState::PLAYING;
         int32_t DELAY_TIME = 1000 / 30;
         int8_t* pressedKeys;
         bool successfulInitialization;

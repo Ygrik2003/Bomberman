@@ -21,8 +21,12 @@ set(BOMBERMAN_FILES
     game.cpp
     config.hpp
     glad/glad.c
+
     core/actionField.hpp
     core/actionField.cpp
+
+    math/setOperations.hpp
+
     engine/fileReader.hpp
     engine/fileReader.cpp
     engine/logger.hpp

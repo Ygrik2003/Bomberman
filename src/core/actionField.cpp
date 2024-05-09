@@ -69,23 +69,27 @@ void ActionField::generateFields(V_str& rawField){
 
 // True if moved successfully
 bool ActionField::tryMove(Bomberman& bmb, int32_t moveX, int32_t moveY){
-    S_str str = {toStringCoord( bmb.coordinate.x + moveX,
-                                bmb.coordinate.y + moveY )};
-    bool success = getIntersection(str, fieldPossible).size() == 1;
-    if(success){
-        bmb.coordinate.x += moveX;
-        bmb.coordinate.y += moveY;
-    }
-
-    return success;
+    if(getDeltaTime(bmb.timeInit) * TIME_MULTIPLIER >= 1){
+        bmb.direction = glm::vec2(moveX, moveY);
+        S_str str = {toStringCoord( bmb.coordinate.x + moveX,
+                                    bmb.coordinate.y + moveY )};
+        bool success = math::getIntersection(str, fieldPossible).size() == 1;
+        if(success){
+            bmb.coordinate.x += moveX;
+            bmb.coordinate.y += moveY;
+            bmb.timeInit = std::chrono::steady_clock::now();
+        }
+        return success;
+    } else 
+        return false;
 }
 
 bool ActionField::placeBomb(Bomberman& bomberman){
     if(bomberman.bombCount < 1)
         return false;
 
-    auto it = fieldExplosion.find(toStringCoord(bomberman.coordinate));
-    if (it != fieldExplosion.end()) {
+    auto it = bombs.find(toStringCoord(bomberman.coordinate));
+    if (it != bombs.end()) {
         return false;
     } else {
         Bomb bomb;
@@ -117,7 +121,7 @@ void ActionField::action(Action action){
             placeBomb(players[0]);
             break;
         }case PAUSE:{
-            isPaused = true;
+            gameState = GameState::FINISHED;
             break;
         }default:
             break;
@@ -139,6 +143,8 @@ void ActionField::drawExplosion(){
     std::map<str, int32_t>::iterator it;
     Coordinate coordinate;
 
+    TextureType tt;
+
     for(it = fieldExplosion.begin(); it != fieldExplosion.end(); it++){
         coordinate = parse(it->first);
         render->draw(coordinate.x, coordinate.y, 1, 1, TEXTURE_EXPLOSION_1);
@@ -151,7 +157,25 @@ void ActionField::drawBombs(){
 
     for(it = bombs.begin(); it != bombs.end(); it++){
         coordinate = parse(it->first);
-        render->draw(coordinate.x, coordinate.y, 1, 1, TEXTURE_BOMB_1);
+
+        TextureType tt;
+        switch (it->second.ttl){
+            case 5:
+            case 4:
+                tt = TextureType::TEXTURE_BOMB_1;
+                break;
+            case 3:
+            case 2:
+                tt = TextureType::TEXTURE_BOMB_2;
+                break;
+            case 1:
+            case 0:
+                tt = TextureType::TEXTURE_BOMB_3;
+                break;
+            default:
+                break;
+        }
+        render->draw(coordinate.x, coordinate.y, 1, 1, tt);
     }
 }
 
@@ -160,11 +184,20 @@ void ActionField::drawPlayers(){
     Coordinate coordinate;
 
     for(it = players.begin(); it != players.end(); it++){
+        render->setUniformFloat("dt", getDeltaTime(it->timeInit));
+        render->setUniformVec2("direction", it->direction);
         render->draw(it->coordinate.x, it->coordinate.y, 1, 1, TEXTURE_PLAYER_1);
+        render->setUniformFloat("dt", 0);
+        render->setUniformVec2("direction", glm::vec2(0, 0));
+
     }
 
     for(it = enemies.begin(); it != enemies.end(); it++){
+        render->setUniformFloat("dt", getDeltaTime(it->timeInit));
+        render->setUniformVec2("direction", it->direction);
         render->draw(it->coordinate.x, it->coordinate.y, 1, 1, TEXTURE_ENEMY_1);
+        render->setUniformFloat("dt", 0);
+        render->setUniformVec2("direction", glm::vec2(0, 0));
     }
 }
 
@@ -180,12 +213,22 @@ void ActionField::draw(){
 
 
 void ActionField::calculate(){
+    if(gameState == GameState::PAUSED)
+        return;
+
+    if(players.size() == 0 || enemies.size() == 0){
+        gameState = GameState::FINISHED;
+    }
+
     // Calculation for bombs
     std::map<str, Bomb>::iterator itBomb;
     for(itBomb = bombs.begin(); itBomb != bombs.end();){
         Bomb* bomb;
         bomb = &itBomb->second;
-        bomb->ttl--;
+        if(getDeltaTime(bomb->timeInit) * TIME_MULTIPLIER >= 1){
+            bomb->ttl--;
+            bomb->timeInit = std::chrono::steady_clock::now();
+        }
 
         if(bomb->ttl <= 0){
             explode(bomb->coordinate, bomb->power);
@@ -200,24 +243,35 @@ void ActionField::calculate(){
     // Calculating for players and enemies collision
     std::vector<Bomberman>::iterator itBomberman;
     S_str explosion = getSetOfKeys(fieldExplosion);
-    for(itBomberman = players.begin(); itBomberman != players.end(); itBomberman++){
+
+    for(itBomberman = players.begin(); itBomberman != players.end(); ){
         itBomberman->cooldownImmortality--;
         S_str playerCoord = {toStringCoord(itBomberman->coordinate)};
-        if(getIntersection(explosion, playerCoord).size() == 1){
-            if(itBomberman->cooldownImmortality == 0){
+        if(math::getIntersection(explosion, playerCoord).size() == 1){
+            if(itBomberman->cooldownImmortality <= 0){
                 itBomberman->lives--;
                 itBomberman->cooldownImmortality = COOLDOWN_IMMORTALITY;
             }
         }
+        if(itBomberman->lives == 0){
+            itBomberman = players.erase(itBomberman);
+        } else {
+            itBomberman++;
+        }
     }
-    for(itBomberman = enemies.begin(); itBomberman != enemies.end(); itBomberman++){
+    for(itBomberman = enemies.begin(); itBomberman != enemies.end();){
         itBomberman->cooldownImmortality--;
         S_str playerCoord = {toStringCoord(itBomberman->coordinate)};
-        if(getIntersection(explosion, playerCoord).size() == 1){
-            if(itBomberman->cooldownImmortality == 0){
+        if(math::getIntersection(explosion, playerCoord).size() == 1){
+            if(itBomberman->cooldownImmortality <= 0){
                 itBomberman->lives--;
                 itBomberman->cooldownImmortality = COOLDOWN_IMMORTALITY;
             }
+        }
+        if(itBomberman->lives == 0){
+            itBomberman = enemies.erase(itBomberman);
+        } else {
+            itBomberman++;
         }
     }
 
@@ -231,6 +285,10 @@ void ActionField::calculate(){
             itExplosion++;
         }
     }
+}
+
+GameState ActionField::getState(){
+    return gameState;
 }
 
 std::vector<Coordinate> ActionField::getNeighbors(Coordinate coordinate){
@@ -279,7 +337,7 @@ void ActionField::explodeDirect(Coordinate coordinateFrom, Coordinate coordinate
 
     S_str strCoord = {toStringCoord(coordinateTo)};
 
-    if(getIntersection(strCoord, fieldSolidWall).size() == 1)
+    if(math::getIntersection(strCoord, fieldSolidWall).size() == 1)
         return;
 
     insertExplosion(coordinateTo);
@@ -290,54 +348,12 @@ void ActionField::explodeDirect(Coordinate coordinateFrom, Coordinate coordinate
     coordinateToNew.x += dx;
     coordinateToNew.y += dy;
 
-    if(getIntersection(strCoord, fieldWall).size() == 1){
-        fieldWall = getDifference(fieldWall, strCoord);
-        fieldPossible = getUnion(fieldPossible, strCoord);
+    if(math::getIntersection(strCoord, fieldWall).size() == 1){
+        fieldWall = math::getDifference(fieldWall, strCoord);
+        fieldPossible = math::getUnion(fieldPossible, strCoord);
         return;
     }
     explodeDirect(coordinateTo, coordinateToNew, power - 1);
-}
-
-S_str ActionField::cartesian_of(S_str& s1, S_str& s2){
-    S_str::iterator it1;
-    S_str::iterator it2;
-    S_str res;
-    for(it1 = s1.begin(); it1 != s1.end(); it1++){
-        for(it2 = s1.begin(); it2 != s1.end(); it2++){
-            res.insert(*it1 + 'x' + *it2);
-        }
-    }
-    return res;
-}
-
-S_str ActionField::getUnion(S_str& s1, S_str& s2){
-    S_str res = s1;
-    res.insert(s2.begin(), s2.end());
-
-    return res;
-}
-
-S_str ActionField::getIntersection(S_str& s1, S_str& s2){
-    S_str res;
-    std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), std::inserter(res, res.begin()));
-    return res;
-}
-
-S_str ActionField::getRange(int32_t a, int32_t b){
-    V_i32 range(b - a);
-    S_str res;
-    std::iota(range.begin(), range.end(), 0);
-    V_i32::iterator it;
-    for(it = range.begin(); it != range.end(); it++)
-        res.insert(std::to_string(*it));
-
-    return res;
-}
-
-S_str ActionField::getDifference(S_str& s1, S_str& s2){
-    S_str res;
-    std::set_difference(s1.begin(), s1.end(), s2.begin(), s2.end(), std::inserter(res, res.begin()));
-    return res;
 }
 
 template<typename V>
@@ -372,4 +388,10 @@ str ActionField::toStringCoord(int32_t a, int32_t b){
 
 str ActionField::toStringCoord(Coordinate coordinate){
     return std::to_string(coordinate.x) + "x" + std::to_string(coordinate.y);
+}
+
+double ActionField::getDeltaTime(std::chrono::steady_clock::time_point time){
+    std::chrono::duration<double> timeSpan = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - time);
+    double t = timeSpan.count();
+    return t > 1 ? 1.0 : t;
 }

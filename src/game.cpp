@@ -53,20 +53,32 @@ int32_t Game::start(){
     SDL_GL_SwapWindow(window);
 
     while (!quit) {
+        gameState = actionField->getState();
+        switch (gameState){
+            case PLAYING:
+            case PAUSED:
+                glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+                glClear(GL_COLOR_BUFFER_BIT);
+                
+                // uint32_t start_time = SDL_GetTicks();
+                eventHandler();
 
+                SDL_Delay(DELAY_TIME);
+
+                actionField->calculate();
+                actionField->draw();
+                break;
+            case FINISHED:
+                quit = true;
+                break;
+            default:
+                break;
+        }
         // int32_t widthScreen, heightScreen;
         // SDL_GetWindowSize(window, &widthScreen, &heightScreen);
 
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+
         
-        uint32_t start_time = SDL_GetTicks();
-        eventHandler();
-
-        SDL_Delay(DELAY_TIME);
-
-        actionField->calculate();
-        actionField->draw();
 
         SDL_GL_SwapWindow(window);
     }

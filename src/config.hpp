@@ -1,12 +1,16 @@
 #pragma once
 #include <SDL2/SDL.h>
+#include <glm/glm.hpp>
 #include <map>
 #include <set>
 #include <vector>
 #include <string>
+#include <chrono>
 
-const int32_t EXPLOSION_STAGES = 3;
-const int32_t COOLDOWN_IMMORTALITY = 5;
+
+const int32_t EXPLOSION_STAGES = 15;
+const int32_t COOLDOWN_IMMORTALITY = 25;
+const double TIME_MULTIPLIER = 1.;  // [] = 1 / s
 
 typedef std::string str;
 typedef std::set<std::string> S_str;
@@ -26,19 +30,22 @@ enum Side{
 };
 
 struct Bomberman{
+    glm::vec2 direction;
     Coordinate coordinate;
     int32_t cooldownImmortality = 3;
     int32_t lives = 3;
-    int32_t bombCount = 1;
-    int32_t power = 5;
+    int32_t bombCount = 3;
+    int32_t power = 1;
     Side side;
+    std::chrono::steady_clock::time_point timeInit = std::chrono::steady_clock::now();
 };
 
 struct Bomb{
     Coordinate coordinate;
-    int32_t ttl = 6;
+    int32_t ttl = 5;
     int32_t power;
     Bomberman* owner;
+    std::chrono::steady_clock::time_point timeInit = std::chrono::steady_clock::now();
 };
 
 enum Action{
@@ -84,7 +91,8 @@ enum TextureType{
 };
 
 namespace Config{
-    const str FILE_PREFIX = "./../../res/";
+    const str FILE_PREFIX = "./res/";
+    // const str FILE_PREFIX = "./../../res/";
 
     const str FIELD_PATH = FILE_PREFIX + "config/gameField.txt";
     const str FRAG_SHADER_PATH = FILE_PREFIX + "shaders/simpleShader.frag";
