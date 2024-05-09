@@ -3,7 +3,10 @@
 
 You can build and play this game using script build.sh.
 
-Control:
+### Control:
+
   WASD - movement
+  
   Enter - place bomb
-  ESC - quit game (in future -- for pause)
+  
+  ESC - quit game
