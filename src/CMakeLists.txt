@@ -21,6 +21,9 @@ set(BOMBERMAN_FILES
     game.cpp
     config.hpp
     glad/glad.c
+    glad/glad.h
+
+    KHR/khrplatform.h
 
     core/actionField.hpp
     core/actionField.cpp
