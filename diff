@@ -1,0 +1,16 @@
+diff --git a/build.sh b/build.sh
+old mode 100644
+new mode 100755
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 213fa39..4d36873 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -51,6 +51,8 @@ add_executable(${EXECUTABLE_NAME} ${BOMBERMAN_FILES})
+ # Link SDL2 library
+ target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})
+ 
++target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR})
++
+ # target_link_libraries(Bomberman PRIVATE glfw)
+ 
+ 

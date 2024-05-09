@@ -1,69 +1,18 @@
-cmake_minimum_required(VERSION 3.0.0)
-project(Bomberman VERSION 0.1.0 LANGUAGES C CXX)
+cmake_minimum_required(VERSION 3.29.0)
 
-set(CMAKE_CXX_COMPILER_WORKS 1)
-
-# find_package(OpenGL)
-
-# if(NOT OPENGL_FOUND)
-#     message("there is no OpenGL!")
-# endif()
-
-# Find SDL2 package
 find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS})
 
-find_package(OpenGL REQUIRED)
+file(GLOB_RECURSE bomberman_src CONFIGURE_DEPENDS ${CMAKE_CURRENT_LIST_DIR}/*.cpp
+                                                  ${CMAKE_CURRENT_LIST_DIR}/*.hpp
+                                                  ${CMAKE_CURRENT_LIST_DIR}/*.c
+                                                  ${CMAKE_CURRENT_LIST_DIR}/*.h)
 
-set(BOMBERMAN_FILES
-    main.cpp
-    game.hpp
-    game.cpp
-    config.hpp
-    glad/glad.c
-    glad/glad.h
+add_executable(Bomberman ${bomberman_src})
+target_link_libraries(Bomberman PRIVATE SDL2::SDL2)
+target_include_directories(Bomberman PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 
-    KHR/khrplatform.h
-
-    core/actionField.hpp
-    core/actionField.cpp
-
-    math/setOperations.hpp
-
-    engine/fileReader.hpp
-    engine/fileReader.cpp
-    engine/logger.hpp
-    engine/logger.cpp
-    engine/render.hpp
-    engine/render.cpp
-    engine/shaderProgram.hpp
-    engine/shaderProgram.cpp
-    engine/stb_image.h
-    engine/stb_image.cpp
-    )
-
-include(CTest)
-enable_testing()
-
-set(EXECUTABLE_NAME Bomberman)
-
-add_executable(${EXECUTABLE_NAME} ${BOMBERMAN_FILES})
-# Link SDL2 library
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})
-
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR})
-
-# target_link_libraries(Bomberman PRIVATE glfw)
-
-
-# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/..)
-
-# add_custom_command(
-#     TARGET RoguePhys
-#     POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:RoguePhys> ${CMAKE_SOURCE_DIR}/..
-# )
-
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
+add_custom_command(
+    TARGET Bomberman
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/res $<TARGET_FILE_DIR:Bomberman>/res
+)

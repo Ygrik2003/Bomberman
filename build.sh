@@ -1,8 +1,6 @@
 #!/bin/bash
 
-mkdir build
-cd build
-cmake ..
-cmake --build .
-cd ..
-./build/src/Bomberman
+rm -rf .build
+cmake . -B.build
+cmake --build .build
+./.build/src/Bomberman
